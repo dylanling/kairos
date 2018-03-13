@@ -9,7 +9,7 @@
   "files": [
     "dist"
   ],
-  "author": "dylanling <dylan.ling@lendup.com>",
+  "author": "dylanling <dylan.t.ling@gmail.com>",
   "repository": {
     "type": "git",
     "url": ""
@@ -103,5 +103,10 @@
     "typedoc": "^0.11.0",
     "typescript": "^2.6.2",
     "validate-commit-msg": "^2.12.2"
+  },
+  "dependencies": {
+    "@types/moment-range": "^3.1.0",
+    "moment-range": "^3.1.0",
+    "immutable": "^3.8.2"
   }
 }
