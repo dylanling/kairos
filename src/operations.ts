@@ -23,7 +23,7 @@ export function boundedRangesEqual(
   rhs: BoundedRanges
 ): Boolean {
   return (
-    lhs.size == rhs.size &&
+    lhs.size === rhs.size &&
     lhs.zipWith((l, r) => rangesEqual(l, r), rhs).reduce((l, r) => l && r, true)
   )
 }
