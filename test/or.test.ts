@@ -1,18 +1,16 @@
-import { Or } from '../src/or'
+import { or, during } from '../src/expressions'
 import { List } from 'immutable'
 import { DateRange } from 'moment-range'
 import { boundedRangesEqual } from '../src/operations'
 import { BoundedRanges } from '../src/temporalexpression'
-import { During } from '../src/during'
+import { _2018, monthOf, monthRange } from './utils'
 
 describe('Or', () => {
-  const _2018 = new DateRange(new Date('2018-01-01'), new Date('2019-01-01'))
-
   it('returns the union of two distinct ranges', () => {
-    const april = new DateRange(new Date('2018-04-01'), new Date('2018-05-01'))
-    const july = new DateRange(new Date('2018-07-01'), new Date('2018-07-01'))
+    const april = monthOf(2018, 4)
+    const july = monthOf(2018, 7)
 
-    const expression = new Or(new During(april), new During(july))
+    const expression = or(during(april), during(july))
 
     const concrete = expression.concrete(_2018)
     const expected = List.of(april, july)
@@ -20,21 +18,25 @@ describe('Or', () => {
     expect(boundedRangesEqual(concrete, expected)).toBeTruthy()
   })
 
-  it('returns the union of two overlapping ranges', () => {
-    const aprilAndMay = new DateRange(
-      new Date('2018-04-01'),
-      new Date('2018-06-01')
-    )
-    const mayAndJune = new DateRange(
-      new Date('2018-05-01'),
-      new Date('2018-07-01')
-    )
-    const aprilToJune = new DateRange(
-      new Date('2018-04-01'),
-      new Date('2018-07-01')
-    )
+  it('returns the union of two adjacent ranges', () => {
+    const april = monthOf(2018, 4)
+    const may = monthOf(2018, 5)
+    const aprilAndMay = monthRange(2018, 4, 2018, 5)
 
-    const expression = new Or(new During(aprilAndMay), new During(mayAndJune))
+    const expression = or(during(april), during(may))
+
+    const concrete = expression.concrete(_2018)
+    const expected = List.of(aprilAndMay)
+
+    expect(boundedRangesEqual(concrete, expected)).toBeTruthy()
+  })
+
+  it('returns the union of two overlapping ranges', () => {
+    const aprilAndMay = monthRange(2018, 4, 2018, 5)
+    const mayAndJune = monthRange(2018, 5, 2018, 6)
+    const aprilToJune = monthRange(2018, 4, 2018, 6)
+
+    const expression = or(during(aprilAndMay), during(mayAndJune))
 
     const concrete = expression.concrete(_2018)
     const expected = List.of(aprilToJune)
@@ -43,30 +45,15 @@ describe('Or', () => {
   })
 
   it('returns the union of multiple overlapping ranges', () => {
-    const aprilAndMay = new DateRange(
-      new Date('2018-04-01'),
-      new Date('2018-06-01')
-    )
-    const mayAndJune = new DateRange(
-      new Date('2018-05-01'),
-      new Date('2018-07-01')
-    )
-    const juneAndJuly = new DateRange(
-      new Date('2018-06-01'),
-      new Date('2018-08-01')
-    )
-    const julyAndAugust = new DateRange(
-      new Date('2018-07-01'),
-      new Date('2018-09-01')
-    )
-    const aprilToAugust = new DateRange(
-      new Date('2018-04-01'),
-      new Date('2018-09-01')
-    )
+    const aprilAndMay = monthRange(2018, 4, 2018, 5)
+    const mayAndJune = monthRange(2018, 5, 2018, 6)
+    const juneAndJuly = monthRange(2018, 6, 2018, 7)
+    const julyAndAugust = monthRange(2018, 7, 2018, 8)
+    const aprilToAugust = monthRange(2018, 4, 2018, 8)
 
-    const e1 = new Or(new During(aprilAndMay), new During(mayAndJune))
-    const e2 = new Or(new During(juneAndJuly), new During(julyAndAugust))
-    const expression = new Or(e1, e2)
+    const e1 = or(during(aprilAndMay), during(mayAndJune))
+    const e2 = or(during(juneAndJuly), during(julyAndAugust))
+    const expression = or(e1, e2)
 
     const concrete = expression.concrete(_2018)
     const expected = List.of(aprilToAugust)
@@ -75,35 +62,17 @@ describe('Or', () => {
   })
 
   it('returns the union of overlapping ranges and distinct ranges', () => {
-    const february = new DateRange(
-      new Date('2018-02-01'),
-      new Date('2018-03-01')
-    )
-    const aprilAndMay = new DateRange(
-      new Date('2018-04-01'),
-      new Date('2018-06-01')
-    )
-    const mayAndJune = new DateRange(
-      new Date('2018-05-01'),
-      new Date('2018-07-01')
-    )
-    const juneAndJuly = new DateRange(
-      new Date('2018-06-01'),
-      new Date('2018-08-01')
-    )
-    const julyAndAugust = new DateRange(
-      new Date('2018-07-01'),
-      new Date('2018-09-01')
-    )
-    const aprilToAugust = new DateRange(
-      new Date('2018-04-01'),
-      new Date('2018-09-01')
-    )
+    const february = monthOf(2018, 2)
+    const aprilAndMay = monthRange(2018, 4, 2018, 5)
+    const mayAndJune = monthRange(2018, 5, 2018, 6)
+    const juneAndJuly = monthRange(2018, 6, 2018, 7)
+    const julyAndAugust = monthRange(2018, 7, 2018, 8)
+    const aprilToAugust = monthRange(2018, 4, 2018, 8)
 
-    const e1 = new Or(new During(aprilAndMay), new During(mayAndJune))
-    const e2 = new Or(new During(juneAndJuly), new During(julyAndAugust))
-    const e3 = new Or(e1, e2)
-    const expression = new Or(new During(february), e3)
+    const e1 = or(during(aprilAndMay), during(mayAndJune))
+    const e2 = or(during(juneAndJuly), during(julyAndAugust))
+    const e3 = or(e1, e2)
+    const expression = or(during(february), e3)
 
     const concrete = expression.concrete(_2018)
     const expected = List.of(february, aprilToAugust)
@@ -112,35 +81,17 @@ describe('Or', () => {
   })
 
   it('returns the union of overlapping ranges and distinct ranges in order', () => {
-    const february = new DateRange(
-      new Date('2018-02-01'),
-      new Date('2018-03-01')
-    )
-    const aprilAndMay = new DateRange(
-      new Date('2018-04-01'),
-      new Date('2018-06-01')
-    )
-    const mayAndJune = new DateRange(
-      new Date('2018-05-01'),
-      new Date('2018-07-01')
-    )
-    const juneAndJuly = new DateRange(
-      new Date('2018-06-01'),
-      new Date('2018-08-01')
-    )
-    const julyAndAugust = new DateRange(
-      new Date('2018-07-01'),
-      new Date('2018-09-01')
-    )
-    const aprilToAugust = new DateRange(
-      new Date('2018-04-01'),
-      new Date('2018-09-01')
-    )
+    const february = monthOf(2018, 2)
+    const aprilAndMay = monthRange(2018, 4, 2018, 5)
+    const mayAndJune = monthRange(2018, 5, 2018, 6)
+    const juneAndJuly = monthRange(2018, 6, 2018, 7)
+    const julyAndAugust = monthRange(2018, 7, 2018, 8)
+    const aprilToAugust = monthRange(2018, 4, 2018, 8)
 
-    const e1 = new Or(new During(aprilAndMay), new During(julyAndAugust))
-    const e2 = new Or(new During(juneAndJuly), new During(mayAndJune))
-    const e3 = new Or(e1, e2)
-    const expression = new Or(e3, new During(february))
+    const e1 = or(during(aprilAndMay), during(julyAndAugust))
+    const e2 = or(during(juneAndJuly), during(mayAndJune))
+    const e3 = or(e1, e2)
+    const expression = or(e3, during(february))
 
     const concrete = expression.concrete(_2018)
     const expected = List.of(february, aprilToAugust)
