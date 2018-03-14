@@ -1,21 +1,19 @@
-import { or, during } from '../src/expressions'
+import { monthOf, _2018, monthRange } from './helper'
+import { or, during } from '../../src/expressions/expressions'
 import { List } from 'immutable'
-import { DateRange } from 'moment-range'
-import { boundedRangesEqual } from '../src/operations'
-import { BoundedRanges } from '../src/temporalexpression'
-import { _2018, monthOf, monthRange } from './utils'
+import { rangesEqual } from '../../src/expressions/ranges'
 
-describe('Or', () => {
+describe('Union', () => {
   it('returns the union of two distinct ranges', () => {
     const april = monthOf(2018, 4)
     const july = monthOf(2018, 7)
 
     const expression = or(during(april), during(july))
 
-    const concrete = expression.concrete(_2018)
+    const ranges = expression.ranges(_2018)
     const expected = List.of(april, july)
 
-    expect(boundedRangesEqual(concrete, expected)).toBeTruthy()
+    expect(rangesEqual(ranges, expected)).toBeTruthy()
   })
 
   it('returns the union of two adjacent ranges', () => {
@@ -25,10 +23,10 @@ describe('Or', () => {
 
     const expression = or(during(april), during(may))
 
-    const concrete = expression.concrete(_2018)
+    const ranges = expression.ranges(_2018)
     const expected = List.of(aprilAndMay)
 
-    expect(boundedRangesEqual(concrete, expected)).toBeTruthy()
+    expect(rangesEqual(ranges, expected)).toBeTruthy()
   })
 
   it('returns the union of two overlapping ranges', () => {
@@ -38,10 +36,10 @@ describe('Or', () => {
 
     const expression = or(during(aprilAndMay), during(mayAndJune))
 
-    const concrete = expression.concrete(_2018)
+    const ranges = expression.ranges(_2018)
     const expected = List.of(aprilToJune)
 
-    expect(boundedRangesEqual(concrete, expected)).toBeTruthy()
+    expect(rangesEqual(ranges, expected)).toBeTruthy()
   })
 
   it('returns the union of multiple overlapping ranges', () => {
@@ -55,10 +53,10 @@ describe('Or', () => {
     const e2 = or(during(juneAndJuly), during(julyAndAugust))
     const expression = or(e1, e2)
 
-    const concrete = expression.concrete(_2018)
+    const ranges = expression.ranges(_2018)
     const expected = List.of(aprilToAugust)
 
-    expect(boundedRangesEqual(concrete, expected)).toBeTruthy()
+    expect(rangesEqual(ranges, expected)).toBeTruthy()
   })
 
   it('returns the union of overlapping ranges and distinct ranges', () => {
@@ -74,10 +72,10 @@ describe('Or', () => {
     const e3 = or(e1, e2)
     const expression = or(during(february), e3)
 
-    const concrete = expression.concrete(_2018)
+    const ranges = expression.ranges(_2018)
     const expected = List.of(february, aprilToAugust)
 
-    expect(boundedRangesEqual(concrete, expected)).toBeTruthy()
+    expect(rangesEqual(ranges, expected)).toBeTruthy()
   })
 
   it('returns the union of overlapping ranges and distinct ranges in order', () => {
@@ -93,9 +91,9 @@ describe('Or', () => {
     const e3 = or(e1, e2)
     const expression = or(e3, during(february))
 
-    const concrete = expression.concrete(_2018)
+    const ranges = expression.ranges(_2018)
     const expected = List.of(february, aprilToAugust)
 
-    expect(boundedRangesEqual(concrete, expected)).toBeTruthy()
+    expect(rangesEqual(ranges, expected)).toBeTruthy()
   })
 })
