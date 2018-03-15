@@ -8,24 +8,27 @@ import { monthOf } from './helper'
 
 describe('Recurring', () => {
   it('returns recurring weekly', () => {
-    const march = monthOf(2018, 3)
-    const marchFirstTwoToThreePM = during(
-      new DateRange(
-        new Date(Date.UTC(2018, 2, 1, 14, 0, 0)),
-        new Date(Date.UTC(2018, 2, 1, 15, 0, 0))
+    const twoToThreePMOnMarch = (date: number) =>
+      during(
+        new DateRange(
+          new Date(Date.UTC(2018, 2, date, 14, 0, 0)),
+          new Date(Date.UTC(2018, 2, date, 15, 0, 0))
+        )
       )
-    )
+    const march = monthOf(2018, 3)
 
-    const expression = new Recurring(weekly, marchFirstTwoToThreePM)
+    const expression = new Recurring(weekly, twoToThreePMOnMarch(1))
 
     const ranges = expression.ranges(march)
 
-    console.log(ranges)
-    // const expected = List.of(
-    //   monthRange(2018, 1, 2018, 3),
-    //   monthRange(2018, 5, 2018, 12)
-    // )
+    const expected = List.of(
+      twoToThreePMOnMarch(1).dateRange(),
+      twoToThreePMOnMarch(8).dateRange(),
+      twoToThreePMOnMarch(15).dateRange(),
+      twoToThreePMOnMarch(22).dateRange(),
+      twoToThreePMOnMarch(29).dateRange()
+    )
 
-    // expect(rangesEqual(ranges, expected)).toBeTruthy()
+    expect(rangesEqual(ranges, expected)).toBeTruthy()
   })
 })
