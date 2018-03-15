@@ -1,5 +1,5 @@
 import { DateRange } from 'moment-range'
-import { List } from 'immutable'
+import { List, Collection } from 'immutable'
 import { Moment, max, min } from 'moment'
 
 export const empty: List<DateRange> = List.of()
@@ -50,28 +50,21 @@ const momentsToRanges = (moments: List<Moment>): List<DateRange> => {
   return starts.zip(ends).map(tuple => new DateRange(tuple[0], tuple[1]))
 }
 
-const typeSafeBinaryMomentOperation = (
-  operation: (...moments: Moment[]) => Moment,
-  left: Moment | undefined,
-  right: Moment | undefined
-) => {
-  if (left && right) {
-    return operation(left, right)
-  } else if (left) {
-    return left
-  } else if (right) {
-    return right
-  } else {
-    throw new RangeError(
-      'cannot compute binary operation of two undefined values'
-    )
-  }
+function flatMap<T>(maybes: (T | undefined)[]): T[] {
+  const reducer = (values: List<T>, maybe: T | undefined) =>
+    maybe ? values.concat(maybe) : values
+  return maybes.reduce(reducer, List.of()).toArray()
+}
+
+function safeReduction<T>(
+  operation: (operands: T[]) => T,
+  ...operands: (T | undefined)[]
+) {
+  return operation(flatMap(operands))
 }
 
 const withGreatestMax = (operand: List<Moment>, other: List<Moment>) =>
-  typeSafeBinaryMomentOperation(max, operand.last(), other.last()).isAfter(
-    operand.last()
-  )
+  safeReduction(max, operand.last(), other.last()).isAfter(operand.last())
     ? operand.concat(other.last()) //.add(1, 'ms')
     : operand
 
@@ -86,22 +79,14 @@ export function mergeUsing(
   const leftMoments = rangesToMoments(lhs)
   const rightMoments = rangesToMoments(rhs)
 
-  const maxMoment = typeSafeBinaryMomentOperation(
-    max,
-    leftMoments.last(),
-    rightMoments.last()
-  )
+  const maxMoment = safeReduction(max, leftMoments.last(), rightMoments.last())
 
   let leftIndex = 0
   let rightIndex = 0
 
   let result: List<Moment> = List.of()
 
-  let scan = typeSafeBinaryMomentOperation(
-    min,
-    leftMoments.first(),
-    rightMoments.first()
-  )
+  let scan = safeReduction(min, leftMoments.first(), rightMoments.first())
   while (scan.isBefore(maxMoment)) {
     let inLeft = scan.isBefore(leftMoments.get(leftIndex)) && leftIndex % 2 == 1
     let inRight =
@@ -120,7 +105,7 @@ export function mergeUsing(
       rightIndex = rightIndex + 1
     }
 
-    scan = typeSafeBinaryMomentOperation(
+    scan = safeReduction(
       min,
       leftMoments.get(leftIndex),
       rightMoments.get(rightIndex)
