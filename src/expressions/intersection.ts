@@ -1,13 +1,9 @@
 import { TemporalExpression } from './expression'
 import { DateRange } from 'moment-range'
 import { List } from 'immutable'
-import {
-  dateRangesOverlap,
-  dateRangesAdjacent,
-  addIntersectingDateRanges
-} from './ranges'
+import { dateRangesOverlap, intersectionOfDateRanges } from './ranges'
 
-export class Union extends TemporalExpression {
+export class Intersection extends TemporalExpression {
   readonly left: TemporalExpression
   readonly right: TemporalExpression
 
@@ -19,16 +15,9 @@ export class Union extends TemporalExpression {
 
   ranges(reference: DateRange): List<DateRange> {
     const reducer = (ranges: List<DateRange>, range: DateRange) =>
-      ranges.isEmpty() ||
-      !(
-        dateRangesOverlap(range, ranges.last()) ||
-        dateRangesAdjacent(range, ranges.last())
-      )
-        ? ranges.concat(List.of(range))
-        : ranges
-            .butLast()
-            .concat(addIntersectingDateRanges(range, ranges.last()))
-            .toList()
+      ranges.isEmpty() || !dateRangesOverlap(range, ranges.last())
+        ? ranges
+        : ranges.concat(intersectionOfDateRanges(range, ranges.last())).toList()
 
     return this.left
       .ranges(reference)
