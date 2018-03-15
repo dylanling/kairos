@@ -31,14 +31,15 @@ export function intersection(lhs: DateRange, rhs: DateRange): List<DateRange> {
   return lhs.overlaps(rhs) ? List.of(lhs.intersect(rhs)) : List.of()
 }
 
-const rangesToMoments = (ranges: List<DateRange>): List<Moment> =>
-  ranges.reduce(
+function rangesToMoments(ranges: List<DateRange>): List<Moment> {
+  return ranges.reduce(
     (moments: List<Moment>, range: DateRange) =>
       moments.concat(range.start, range.end),
     List.of()
   )
+}
 
-const momentsToRanges = (moments: List<Moment>): List<DateRange> => {
+function momentsToRanges(moments: List<Moment>): List<DateRange> {
   const enumerated = moments.zip(moments.keySeq())
   const starts = enumerated
     .filter((_, index) => index % 2 == 0)
@@ -59,14 +60,9 @@ function flatMap<T>(maybes: (T | undefined)[]): T[] {
 function safeReduction<T>(
   operation: (operands: T[]) => T,
   ...operands: (T | undefined)[]
-) {
+): T {
   return operation(flatMap(operands))
 }
-
-const withGreatestMax = (operand: List<Moment>, other: List<Moment>) =>
-  safeReduction(max, operand.last(), other.last()).isAfter(operand.last())
-    ? operand.concat(other.last()) //.add(1, 'ms')
-    : operand
 
 export function mergeUsing(
   operator: (a: boolean, b: boolean) => boolean,
