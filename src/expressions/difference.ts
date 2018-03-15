@@ -1,9 +1,9 @@
 import { TemporalExpression } from './expression'
-import { DateRange } from 'moment-range'
 import { List } from 'immutable'
-import { mergeUsing } from './ranges'
+import { DateRange } from 'moment-range'
+import { empty } from './ranges'
 
-export class Union extends TemporalExpression {
+export class Difference extends TemporalExpression {
   readonly left: TemporalExpression
   readonly right: TemporalExpression
 
@@ -14,10 +14,9 @@ export class Union extends TemporalExpression {
   }
 
   ranges(reference: DateRange): List<DateRange> {
-    return mergeUsing(
-      (a, b) => a && b,
-      this.left.ranges(reference),
-      this.right.ranges(reference)
-    )
+    const lhs = this.left.ranges(reference)
+    const rhs = this.right.ranges(reference)
+
+    return List.of()
   }
 }

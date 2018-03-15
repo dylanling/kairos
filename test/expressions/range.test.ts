@@ -36,4 +36,8 @@ describe('During', () => {
 
     expect(rangesEqual(ranges, empty)).toBeTruthy()
   })
+
+  it('is an area i just do random tests', () => {
+    const l = List.of('a', 'b', 'c')
+  })
 })
