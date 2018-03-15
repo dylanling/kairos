@@ -9,7 +9,7 @@ import { Complement } from './complement'
 export const during = (duration: DateRange) => new Range(duration)
 
 export const or = (left: TemporalExpression, right: TemporalExpression) =>
-  new Union(left, right)
+  new Union(left, right) // Union.of()?
 
 export const and = (left: TemporalExpression, right: TemporalExpression) =>
   new Intersection(left, right)
