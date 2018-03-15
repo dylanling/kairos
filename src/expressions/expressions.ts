@@ -5,6 +5,8 @@ import { TemporalExpression } from './expression'
 import { Intersection } from './intersection'
 import { Difference } from './difference'
 import { Complement } from './complement'
+import { Recurrence } from './recurrence'
+import { Recurring } from './recurring'
 
 export const during = (duration: DateRange) => new Range(duration)
 
@@ -19,3 +21,6 @@ export const except = (left: TemporalExpression, right: TemporalExpression) =>
 
 export const not = (expression: TemporalExpression) =>
   new Complement(expression)
+
+export const recurring = (recurrence: Recurrence, firstRange: Range) =>
+  new Recurring(recurrence, firstRange)

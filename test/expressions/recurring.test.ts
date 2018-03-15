@@ -1,5 +1,4 @@
-import { during } from '../../src/expressions/expressions'
-import { Recurring } from '../../src/expressions/recurring'
+import { during, recurring } from '../../src/expressions/expressions'
 import { List } from 'immutable'
 import { rangesEqual } from '../../src/expressions/ranges'
 import { DateRange } from 'moment-range'
@@ -17,7 +16,7 @@ describe('Recurring', () => {
       )
     const march = monthOf(2018, 3)
 
-    const expression = new Recurring(weekly, twoToThreePMOnMarch(1))
+    const expression = recurring(weekly, twoToThreePMOnMarch(1))
 
     const ranges = expression.ranges(march)
 

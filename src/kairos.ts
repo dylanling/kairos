@@ -1,30 +1,7 @@
 import { DateRange } from 'moment-range'
-import { during, or, and, except } from './expressions/expressions'
+import { during, or, and, except, recurring } from './expressions/expressions'
 import { TemporalExpression } from './expressions/expression'
-
-export const februaryNinth2007 = new DateRange(
-  new Date('2007-02-09'),
-  new Date('2007-02-10')
-)
-
-export const _2018 = new DateRange(
-  new Date('2018-01-01'),
-  new Date('2019-01-01')
-)
-export const _2019 = new DateRange(
-  new Date('2019-01-01'),
-  new Date('2020-01-01')
-)
-
-export const march = new DateRange(
-  new Date('2018-03-01'),
-  new Date('2018-04-01')
-)
-export const april = new DateRange(
-  new Date('2018-04-01'),
-  new Date('2018-05-01')
-)
-export const may = new DateRange(new Date('2018-05-01'), new Date('2018-06-01'))
+import { weekly } from './expressions/recurrence'
 
 export class Example {
   basicExample() {
@@ -58,4 +35,41 @@ export class Example {
     // Infix notation
     example = during(_2018).except(during(april))
   }
+
+  recurringFixedIntervalExample() {
+    // [[2018-03-01 14:00:00:000, 2018-03-01 15:00:00:000], [2018-03-08 14:00:00:000, 2018-03-08 15:00:00:000], ...]
+    let example: TemporalExpression = recurring(weekly, twoToThreePMOnMarch1st)
+  }
 }
+
+export const februaryNinth2007 = new DateRange(
+  new Date('2007-02-09'),
+  new Date('2007-02-10')
+)
+
+export const _2018 = new DateRange(
+  new Date('2018-01-01'),
+  new Date('2019-01-01')
+)
+export const _2019 = new DateRange(
+  new Date('2019-01-01'),
+  new Date('2020-01-01')
+)
+
+export const march = new DateRange(
+  new Date('2018-03-01'),
+  new Date('2018-04-01')
+)
+export const april = new DateRange(
+  new Date('2018-04-01'),
+  new Date('2018-05-01')
+)
+
+export const may = new DateRange(new Date('2018-05-01'), new Date('2018-06-01'))
+
+const twoToThreePMOnMarch1st = during(
+  new DateRange(
+    new Date(Date.UTC(2018, 2, 1, 14, 0, 0)),
+    new Date(Date.UTC(2018, 2, 1, 15, 0, 0))
+  )
+)
