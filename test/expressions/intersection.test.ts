@@ -72,4 +72,17 @@ describe('Intersection', () => {
 
     expect(rangesEqual(ranges, expected)).toBeTruthy()
   })
+
+  it('returns the empty set for the intersection of two empty sets', () => {
+    const e1 = and(during(months.get('april')), during(months.get('july')))
+    const e2 = and(
+      during(months.get('september')),
+      during(months.get('november'))
+    )
+
+    const expression = and(e1, e2)
+    const ranges = expression.ranges(_2018)
+
+    expect(rangesEqual(ranges, empty)).toBeTruthy()
+  })
 })

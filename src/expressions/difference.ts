@@ -1,7 +1,7 @@
 import { TemporalExpression } from './expression'
 import { List } from 'immutable'
 import { DateRange } from 'moment-range'
-import { empty } from './ranges'
+import { empty, mergeUsing } from './ranges'
 
 export class Difference extends TemporalExpression {
   readonly left: TemporalExpression
@@ -14,9 +14,10 @@ export class Difference extends TemporalExpression {
   }
 
   ranges(reference: DateRange): List<DateRange> {
-    const lhs = this.left.ranges(reference)
-    const rhs = this.right.ranges(reference)
-
-    return List.of()
+    return mergeUsing(
+      (inLeft, inRight) => inLeft && !inRight,
+      this.left.ranges(reference),
+      this.right.ranges(reference)
+    )
   }
 }

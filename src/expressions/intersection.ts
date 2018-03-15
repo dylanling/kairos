@@ -15,7 +15,7 @@ export class Intersection extends TemporalExpression {
 
   ranges(reference: DateRange): List<DateRange> {
     return mergeUsing(
-      (a, b) => a || b,
+      (inLeft, inRight) => inLeft && inRight,
       this.left.ranges(reference),
       this.right.ranges(reference)
     )

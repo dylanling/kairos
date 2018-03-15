@@ -19,7 +19,7 @@ export function rangesEqual(
   rhs: List<DateRange>
 ): boolean {
   return (
-    (lhs.isEmpty() && lhs.isEmpty()) ||
+    (lhs.isEmpty() && rhs.isEmpty()) ||
     (lhs.size === rhs.size &&
       lhs
         .zipWith((l, r) => dateRangesEqual(l, r), rhs)
@@ -65,17 +65,21 @@ function safeReduction<T>(
 }
 
 export function mergeUsing(
-  operator: (a: boolean, b: boolean) => boolean,
+  operator: (inLeft: boolean, inRight: boolean) => boolean,
   lhs: List<DateRange>,
   rhs: List<DateRange>
 ): List<DateRange> {
   if (lhs.isEmpty() && rhs.isEmpty()) {
     return lhs
   }
-  const leftMoments = rangesToMoments(lhs)
-  const rightMoments = rangesToMoments(rhs)
+  let leftMoments = rangesToMoments(lhs)
+  let rightMoments = rangesToMoments(rhs)
 
   const maxMoment = safeReduction(max, leftMoments.last(), rightMoments.last())
+    .clone()
+    .add(1, 'ms')
+  leftMoments = leftMoments.concat(maxMoment)
+  rightMoments = rightMoments.concat(maxMoment)
 
   let leftIndex = 0
   let rightIndex = 0
@@ -83,13 +87,19 @@ export function mergeUsing(
   let result: List<Moment> = List.of()
 
   let scan = safeReduction(min, leftMoments.first(), rightMoments.first())
-  while (scan.isBefore(maxMoment)) {
-    let inLeft = scan.isBefore(leftMoments.get(leftIndex)) && leftIndex % 2 == 1
-    let inRight =
-      scan.isBefore(rightMoments.get(rightIndex)) && rightIndex % 2 == 1
-    let inResult = operator(inLeft, inRight)
 
-    if (inResult !== (result.size % 2 == 1)) {
+  while (scan.isBefore(maxMoment)) {
+    let inLeft = !(
+      scan.isBefore(leftMoments.get(leftIndex)) !==
+      (leftIndex % 2 === 1)
+    )
+    let inRight = !(
+      scan.isBefore(rightMoments.get(rightIndex)) !==
+      (rightIndex % 2 === 1)
+    )
+    let inResult = operator(inLeft, inRight) !== (result.size % 2 === 1)
+
+    if (inResult) {
       result = result.concat(scan)
     }
 
