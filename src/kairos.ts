@@ -3,7 +3,7 @@ import { during, or, and, except, recurring } from './expressions/expressions'
 import { TemporalExpression } from './expressions/expression'
 import { weekly } from './expressions/recurrence'
 
-export class Example {
+class Example {
   basicExample() {
     // [2007-02-09 00:00:00:000, 2007-02-10 00:00:00:000]
     let example: TemporalExpression = during(februaryNinth2007)
@@ -42,30 +42,17 @@ export class Example {
   }
 }
 
-export const februaryNinth2007 = new DateRange(
+const februaryNinth2007 = new DateRange(
   new Date('2007-02-09'),
   new Date('2007-02-10')
 )
 
-export const _2018 = new DateRange(
-  new Date('2018-01-01'),
-  new Date('2019-01-01')
-)
-export const _2019 = new DateRange(
-  new Date('2019-01-01'),
-  new Date('2020-01-01')
-)
+const _2018 = new DateRange(new Date('2018-01-01'), new Date('2019-01-01'))
+const _2019 = new DateRange(new Date('2019-01-01'), new Date('2020-01-01'))
 
-export const march = new DateRange(
-  new Date('2018-03-01'),
-  new Date('2018-04-01')
-)
-export const april = new DateRange(
-  new Date('2018-04-01'),
-  new Date('2018-05-01')
-)
-
-export const may = new DateRange(new Date('2018-05-01'), new Date('2018-06-01'))
+const march = new DateRange(new Date('2018-03-01'), new Date('2018-04-01'))
+const april = new DateRange(new Date('2018-04-01'), new Date('2018-05-01'))
+const may = new DateRange(new Date('2018-05-01'), new Date('2018-06-01'))
 
 const twoToThreePMOnMarch1st = during(
   new DateRange(
