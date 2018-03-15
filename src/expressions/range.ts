@@ -14,4 +14,8 @@ export class Range extends TemporalExpression {
   ranges(reference: DateRange): List<DateRange> {
     return intersection(this.range, reference)
   }
+
+  dateRange(): DateRange {
+    return this.range
+  }
 }
