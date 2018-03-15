@@ -39,15 +39,15 @@ const rangesToMoments = (ranges: List<DateRange>): List<Moment> =>
   )
 
 const momentsToRanges = (moments: List<Moment>): List<DateRange> => {
-  const enumerated = moments.map((value, index) => [index, value])
+  const enumerated = moments.zip(moments.keySeq())
   const starts = enumerated
-    .filter((index, _) => index % 2 == 0)
-    .map((_, value) => value)
+    .filter((_, index) => index % 2 == 0)
+    .map(tuple => tuple[0])
   const ends = enumerated
-    .filter((index, _) => index % 2 == 1)
-    .map((_, value) => value)
+    .filter((_, index) => index % 2 == 1)
+    .map(tuple => tuple[0])
 
-  return starts.zip(ends).map((start, end) => new DateRange(start, end))
+  return starts.zip(ends).map(tuple => new DateRange(tuple[0], tuple[1]))
 }
 
 const typeSafeBinaryMomentOperation = (
@@ -62,7 +62,9 @@ const typeSafeBinaryMomentOperation = (
   } else if (right) {
     return right
   } else {
-    throw new RangeError('cannot calculate the max of two undefined values')
+    throw new RangeError(
+      'cannot compute binary operation of two undefined values'
+    )
   }
 }
 
