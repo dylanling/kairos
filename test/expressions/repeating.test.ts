@@ -1,11 +1,11 @@
 import { monthOf } from './helper'
 import { every, at, during } from '../../src/expressions/expressions'
 import { List } from 'immutable'
-import { rangesEqual } from '../../src/expressions/ranges'
+import { rangesEqual, dateRangesEqual } from '../../src/expressions/ranges'
 import { DateRange } from 'moment-range'
 
 describe('Repeating', () => {
-  const twoToThreePMOnMarch = (date: number) => twoToThreePMOn(3, date)
+  const twoToThreePMOnApril = (date: number) => twoToThreePMOn(4, date)
 
   const twoToThreePMOn = (month: number, date: number) =>
     during(
@@ -15,20 +15,36 @@ describe('Repeating', () => {
       )
     )
 
+  const april = monthOf(2018, 4)
+  const april1stAt2pm = at(new Date(Date.UTC(2018, 3, 1, 14, 0, 0)))
+
   it('returns recurring weekly', () => {
-    const march = monthOf(2018, 3)
-    const march1stAt2pm = at(new Date(Date.UTC(2018, 2, 1, 14, 0, 0)))
     const expression = every(1, 'week')
       .for(1, 'hour')
-      .startingAt(march1stAt2pm)
-    const ranges = expression.ranges(march)
+      .startingAt(april1stAt2pm)
+    const ranges = expression.ranges(april)
 
     const expected = List.of(
-      twoToThreePMOnMarch(1).dateRange(),
-      twoToThreePMOnMarch(8).dateRange(),
-      twoToThreePMOnMarch(15).dateRange(),
-      twoToThreePMOnMarch(22).dateRange(),
-      twoToThreePMOnMarch(29).dateRange()
+      twoToThreePMOnApril(1).dateRange(),
+      twoToThreePMOnApril(8).dateRange(),
+      twoToThreePMOnApril(15).dateRange(),
+      twoToThreePMOnApril(22).dateRange(),
+      twoToThreePMOnApril(29).dateRange()
+    )
+
+    expect(rangesEqual(ranges, expected)).toBeTruthy()
+  })
+
+  it('returns recurring daily', () => {
+    const expression = every(1, 'day')
+      .startingAt(april1stAt2pm)
+      .for(1, 'hour')
+
+    const ranges = expression.ranges(april)
+    const expected: List<DateRange> = List.of().concat(
+      Array.apply(null, Array(30))
+        .map((_, index) => index + 1)
+        .map(date => twoToThreePMOnApril(date).dateRange())
     )
 
     expect(rangesEqual(ranges, expected)).toBeTruthy()

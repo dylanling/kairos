@@ -1,4 +1,4 @@
-import { during, recurring } from '../../src/expressions/expressions'
+import { during, recurring, at } from '../../src/expressions/expressions'
 import { List } from 'immutable'
 import { rangesEqual } from '../../src/expressions/ranges'
 import { DateRange } from 'moment-range'
@@ -51,5 +51,10 @@ describe('Recurring', () => {
     )
 
     expect(rangesEqual(ranges, expected)).toBeTruthy()
+  })
+
+  it('throws an error for monthly expressions with large dates', () => {
+    const expression = () => monthlyOnThe(29)(at(new Date()))
+    expect(expression).toThrowError(RangeError)
   })
 })

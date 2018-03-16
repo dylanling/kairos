@@ -27,7 +27,7 @@ export class Repeating extends TemporalExpression {
       )
     )
     const recurring = new Recurring(
-      (from: Moment) => from.add(this.every.ms, 'ms'),
+      (from: Moment) => from.clone().add(this.every.ms, 'ms'),
       firstRange
     )
     return recurring.ranges(reference)
