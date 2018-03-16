@@ -14,6 +14,10 @@ export abstract class TemporalExpression {
     return or(this, expression)
   }
 
+  also(expression: TemporalExpression): TemporalExpression {
+    return this.or(expression)
+  }
+
   except(expression: TemporalExpression): TemporalExpression {
     return except(this, expression)
   }
