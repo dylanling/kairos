@@ -8,9 +8,12 @@ import { Complement } from './complement'
 import { Recurrence } from './recurrence'
 import { Recurring } from './recurring'
 import { Duration } from './duration'
-import { Every } from './repeating'
+import { Every, Repeating } from './repeating'
+import { Moment } from 'moment'
 
-export const moment = require('moment')
+const moment = require('moment')
+
+export const at = (date: Date): Moment => moment(date)
 
 export const during = (duration: DateRange) => new Range(duration)
 
@@ -34,52 +37,3 @@ export const duration = (length: number, unit: string) =>
 
 export const every = (length: number, unit: string) =>
   new Every(duration(length, unit))
-/*
-
-class RangeStart {
-    start: Moment
-
-    constructor(start: Moment) {
-        this.start = start
-    }
-
-    until(end: Moment): Range {
-        return new Range(new DateRange(this.start, end))
-    }
-}
-
-
-export const from = (start: Moment) => new RangeStart(start)
-
-// these all have final arguments of ranges WITHIN A SINGLE DAY/DATE
-
-every(day, from(noon).until(midnight)) // time range is enough info when every day
-
-every(week.on(tuesday), from(noon).until(midnight)) // time range not enough info when every week
-
-every(month.onThe(27), from(noon).until(midnight))
-
-day, week.on(tuesday), month.onThe(27) all return a recurrence? also they all return day granularity
-
-
-// another idea
-
-every(5, days, from(noon).until(midnight)).startingOn(someMomentWithDayGranularity?)
-
-every(3, minutes, ???)
-
-// every x somethings has no reference meaning, how to do bounds?
-
-
-// what about
-every(someRange).forADurationOf(someLengthWithoutConcreteStartAndEnd).startingOn(aMoment)
-
-// or
-
-every(someRange, forADurationOf(someLengthWithoutConcreteStartAndEnd), startingOn(aMoment))
-
-every(week).for(1, 'hour').startingOn(moment)
-
-// just need to check duration is shorting than someRange (also just a length/moment range)
-
-*/
