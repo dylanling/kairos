@@ -1,7 +1,16 @@
 import { DateRange } from 'moment-range'
-import { during, or, and, except, recurring } from './expressions/expressions'
+import {
+  during,
+  or,
+  and,
+  except,
+  recurring,
+  every,
+  moment
+} from './expressions/expressions'
 import { TemporalExpression } from './expressions/expression'
 import { weekly } from './expressions/recurrence'
+import { Moment } from 'moment'
 
 class Example {
   basicExample() {
@@ -39,6 +48,13 @@ class Example {
   recurringFixedIntervalExample() {
     // [[2018-03-01 14:00:00:000, 2018-03-01 15:00:00:000], [2018-03-08 14:00:00:000, 2018-03-08 15:00:00:000], ...]
     let example: TemporalExpression = recurring(weekly, twoToThreePMOnMarch1st)
+  }
+
+  betterRecurringFixedIntervalExample() {
+    const march1st2pm: Moment = moment(new Date(Date.UTC(2018, 2, 1, 14, 0, 0)))
+    let example: TemporalExpression = every(1, 'month')
+      .for(2, 'hours')
+      .startingAt(march1st2pm)
   }
 }
 

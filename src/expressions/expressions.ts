@@ -7,6 +7,10 @@ import { Difference } from './difference'
 import { Complement } from './complement'
 import { Recurrence } from './recurrence'
 import { Recurring } from './recurring'
+import { Duration } from './duration'
+import { Every } from './repeating'
+
+export const moment = require('moment')
 
 export const during = (duration: DateRange) => new Range(duration)
 
@@ -25,6 +29,11 @@ export const not = (expression: TemporalExpression) =>
 export const recurring = (recurrence: Recurrence, firstRange: Range) =>
   new Recurring(recurrence, firstRange)
 
+export const duration = (length: number, unit: string) =>
+  new Duration(moment.duration(length, unit).asMilliseconds())
+
+export const every = (length: number, unit: string) =>
+  new Every(duration(length, unit))
 /*
 
 class RangeStart {
@@ -69,9 +78,8 @@ every(someRange).forADurationOf(someLengthWithoutConcreteStartAndEnd).startingOn
 
 every(someRange, forADurationOf(someLengthWithoutConcreteStartAndEnd), startingOn(aMoment))
 
+every(week).for(1, 'hour').startingOn(moment)
+
 // just need to check duration is shorting than someRange (also just a length/moment range)
 
 */
-
-
-
