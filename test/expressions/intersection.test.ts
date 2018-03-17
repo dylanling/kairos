@@ -1,5 +1,5 @@
 import { monthOf, _2018, monthRange, monthsOfYear } from './helper'
-import { and, during, or } from '../../src/expressions/expressions'
+import { and, during, or } from '../../src/kairos'
 import { List } from 'immutable'
 import { rangesEqual, empty } from '../../src/expressions/ranges'
 import { TemporalExpression } from '../../src/expressions/expression'

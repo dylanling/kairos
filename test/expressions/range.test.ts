@@ -1,5 +1,5 @@
 import { monthOf, _2018, monthRange } from './helper'
-import { during } from '../../src/expressions/expressions'
+import { during } from '../../src/kairos'
 import { List } from 'immutable'
 import { rangesEqual, empty } from '../../src/expressions/ranges'
 import { DateRange } from 'moment-range'

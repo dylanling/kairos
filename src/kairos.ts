@@ -1,78 +1,41 @@
 import { DateRange } from 'moment-range'
-import {
-  during,
-  or,
-  and,
-  except,
-  recurring,
-  every,
-  moment
-} from './expressions/expressions'
+import { Range } from './expressions/range'
+import { Union } from './expressions/union'
 import { TemporalExpression } from './expressions/expression'
-import { weekly } from './expressions/recurrence'
+import { Intersection } from './expressions/intersection'
+import { Difference } from './expressions/difference'
+import { Complement } from './expressions/complement'
+import { Recurrence } from './expressions/recurrence'
+import { Recurring } from './expressions/recurring'
+import { Duration } from './expressions/duration'
+import { Every, Repeating } from './expressions/repeating'
 import { Moment } from 'moment'
 
-class Example {
-  basicExample() {
-    // [2007-02-09 00:00:00:000, 2007-02-10 00:00:00:000]
-    let example: TemporalExpression = during(februaryNinth2007)
-  }
+const moment = require('moment')
 
-  unionExample() {
-    // [2018-01-01 00:00:00:000, 2020-01-01 00:00:00:000]
-    let example: TemporalExpression = or(during(_2018), during(_2019))
+export const at = (date: Date): Moment => moment(date)
 
-    // Infix notation
-    example = during(_2018).or(during(_2019))
-  }
+export const between = (start: Moment, end: Moment) => new DateRange(start, end)
 
-  intersectionExample() {
-    const marchApril: TemporalExpression = or(during(march), during(april))
-    const aprilMay: TemporalExpression = or(during(april), during(may))
+export const during = (duration: DateRange) => new Range(duration)
 
-    // [2018-04-01 00:00:00:000, 2018-05-01 00:00:00:000]
-    let example: TemporalExpression = and(marchApril, aprilMay)
+export const or = (left: TemporalExpression, right: TemporalExpression) =>
+  new Union(left, right)
 
-    // Infix notation
-    example = marchApril.and(aprilMay)
-  }
+export const and = (left: TemporalExpression, right: TemporalExpression) =>
+  new Intersection(left, right)
 
-  setDifferenceExample() {
-    // [[2018-01-01 00:00:00:000, 2018-04-01 00:00:00:000], [2018-05-01 00:00:00:000, 2019-01-01 00:00:00:000]]
-    let example: TemporalExpression = except(during(_2018), during(april))
+export const except = (left: TemporalExpression, right: TemporalExpression) =>
+  new Difference(left, right)
 
-    // Infix notation
-    example = during(_2018).except(during(april))
-  }
+export const not = (expression: TemporalExpression) =>
+  new Complement(expression)
 
-  recurringFixedIntervalExample() {
-    // [[2018-03-01 14:00:00:000, 2018-03-01 15:00:00:000], [2018-03-08 14:00:00:000, 2018-03-08 15:00:00:000], ...]
-    let example: TemporalExpression = recurring(weekly, twoToThreePMOnMarch1st)
-  }
+export const recurring = (recurrence: Recurrence, firstRange: Range) =>
+  new Recurring(recurrence, firstRange)
 
-  betterRecurringFixedIntervalExample() {
-    const march1st2pm: Moment = moment(new Date(Date.UTC(2018, 2, 1, 14, 0, 0)))
-    let example: TemporalExpression = every(1, 'month')
-      .for(2, 'hours')
-      .startingAt(march1st2pm)
-  }
-}
+export const duration = (length: number, unit: string) =>
+  new Duration(moment.duration(length, unit).asMilliseconds())
 
-const februaryNinth2007 = new DateRange(
-  new Date('2007-02-09'),
-  new Date('2007-02-10')
-)
-
-const _2018 = new DateRange(new Date('2018-01-01'), new Date('2019-01-01'))
-const _2019 = new DateRange(new Date('2019-01-01'), new Date('2020-01-01'))
-
-const march = new DateRange(new Date('2018-03-01'), new Date('2018-04-01'))
-const april = new DateRange(new Date('2018-04-01'), new Date('2018-05-01'))
-const may = new DateRange(new Date('2018-05-01'), new Date('2018-06-01'))
-
-const twoToThreePMOnMarch1st = during(
-  new DateRange(
-    new Date(Date.UTC(2018, 2, 1, 14, 0, 0)),
-    new Date(Date.UTC(2018, 2, 1, 15, 0, 0))
-  )
-)
+export const every = (length: number, unit: string) =>
+  new Every(duration(length, unit))

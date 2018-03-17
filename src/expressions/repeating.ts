@@ -4,7 +4,7 @@ import { Range } from './range'
 import { List } from 'immutable'
 import { DateRange } from 'moment-range'
 import { TemporalExpression } from './expression'
-import { duration, during } from './expressions'
+import { duration, during } from '../kairos'
 import { Recurring } from './recurring'
 
 export class Repeating extends TemporalExpression {

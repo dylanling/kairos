@@ -2,6 +2,31 @@
 Playing with temporal expressions.
 
 ## Examples
+
+#### Basic Duration with start and end
+```typescript
+let februaryNinth2007 = new DateRange(
+  new Date('2007-02-09'),
+  new Date('2007-02-10')
+)
+
+// [2007-02-09 00:00:00:000, 2007-02-10 00:00:00:000]
+let example: TemporalExpression = during(februaryNinth2007)
+```
+
+#### Expressions for recurring time ranges
+```typescript
+const twoToThreePMOnMarch1st = during(
+  new DateRange(
+    new Date(Date.UTC(2018, 2, 1, 14, 0, 0)),
+    new Date(Date.UTC(2018, 2, 1, 15, 0, 0))
+  )
+)
+
+// [[2018-03-01 14:00:00:000, 2018-03-01 15:00:00:000], [2018-03-08 14:00:00:000, 2018-03-08 15:00:00:000], ...]
+let example: TemporalExpression = recurring(weekly, twoToThreePMOnMarch1st)
+```
+
 ```typescript
 class Example {
   basicExample() {
@@ -75,4 +100,6 @@ const twoToThreePMOnMarch1st = during(
 ```
 
 ## TODO
-make the examples prettier
+- make the examples prettier
+- remove date ranges or at least dont expose them
+- 

@@ -1,7 +1,7 @@
 import { TemporalExpression } from './expression'
 import { DateRange } from 'moment-range'
 import { List } from 'immutable'
-import { and, during } from './expressions'
+import { and, during } from '../kairos'
 import { Difference } from './difference'
 import { Range } from './range'
 

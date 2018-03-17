@@ -1,4 +1,4 @@
-import { during, recurring, at } from '../../src/expressions/expressions'
+import { during, recurring, at } from '../../src/kairos'
 import { List } from 'immutable'
 import { rangesEqual } from '../../src/expressions/ranges'
 import { DateRange } from 'moment-range'
